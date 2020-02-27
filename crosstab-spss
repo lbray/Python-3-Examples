@@ -1,0 +1,35 @@
+import numpy as np
+import pandas as pd
+import pyreadstat
+
+# replace with your info here...
+my_data_path = '/home/larry/Programming/DataScience/data/'
+my_data_file = "4609.sav"
+my_out_file = "4609out.txt"
+
+df, meta = pyreadstat.read_sav(my_data_path + my_data_file)
+meta_dict = dict(zip(meta.column_names, meta.column_labels))
+
+lab001 = meta.column_labels[22]
+tab001 = pd.crosstab(index=df['qcs2_a'], columns=df['attribute_1'], margins=True)
+stat001 = pd.crosstab(index=df['qcs2_a'].replace([77, 88, 99], [np.NaN, np.NaN, np.NaN]), columns=df['attribute_1'], margins=True)
+
+lab002 = meta.column_labels[23]
+tab002 = pd.crosstab(index=df['qcs2_b'], columns=df['attribute_1'], margins=True)
+
+lab003 = meta.column_labels[24]
+tab003 = pd.crosstab(index=df['qcs2_c'], columns=df['attribute_1'], margins=True)
+
+# plain text output...
+with open(my_data_path + my_out_file,'w') as outfile:
+	outfile.write(lab001 + "\n")
+	tab001.to_string(outfile)
+	outfile.write("\n")
+	stat001.describe(percentiles=[.25, .5, .75], include='all').to_string(outfile)
+	outfile.write("\n")
+	outfile.write(lab002 + "\n")
+	tab002.to_string(outfile)
+	outfile.write("\n")
+	outfile.write(lab003 + "\n")
+	tab003.to_string(outfile)
+	outfile.write("\n")
